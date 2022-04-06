@@ -1,27 +1,31 @@
 package com.chenjin.es.test;
 
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+
 
 import java.io.IOException;
 
-public class DeleteIndex {
+public class UpdateDoc {
     public static void main(String[] args) throws IOException {
 
         // 创建ES客户端
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(new HttpHost("localhost",9200,"http"))
         );
-        // 删除索引 - 请求对象
-        DeleteIndexRequest request = new DeleteIndexRequest("user2");
-        // 发送请求，获取响应
-        AcknowledgedResponse response = client.indices().delete(request, RequestOptions.DEFAULT);
-        // 操作结果
-        System.out.println("操作结果 = " + response.isAcknowledged());
+
+        // 修改数据
+        UpdateRequest request = new UpdateRequest();
+        request.index("user").id("1001");
+        request.doc(XContentType.JSON,"sex","女");
+
+        UpdateResponse response = client.update(request, RequestOptions.DEFAULT);
+        System.out.println(response.getResult());
         // 关闭ES客户端
         client.close();
     }
